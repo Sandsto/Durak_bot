@@ -27,7 +27,7 @@ class Durak():
     guest_message_id):
         self.host_id = host_id
         self.guest_id = guest_id
-        self. host_name = host_name
+        self.host_name = host_name
         self.guest_name = guest_name
         self.host_message_id = host_message_id
         self.guest_message_id = guest_message_id
@@ -37,6 +37,7 @@ class Durak():
         self.card_on_desk = [] 
         self.who_turn = 0
         self.who_attacking = 0
+        self.attacking_cards = []
 
     def start_game(self):
         self.deck_of_card= random.sample(all_cards36.keys(), len(all_cards36)) #вернет массив с обозначением карт
@@ -65,8 +66,7 @@ class Durak():
                         self.hand_host.append(self.deck_of_card.pop())
 
             self.full_hand(who_attacking_id)
-        
-
+      
     def who_start_game(self): #определим кто ходит первым, найдя меньший козырь
         trump_host_card = []
         #пройдемся по каждой карте игрока и если это козырь, запишем достоинство карты в trump_host_card
@@ -103,6 +103,90 @@ class Durak():
         else:
             return self.guest_name 
 
+    
+    def change_who_turn(self):
+        if self.who_turn == self.host_id:
+            self.who_turn = self.guest_id
+        else:
+            self.who_turn = self.guest_id 
+
+    def change_who_attacking(self):
+        if self.who_attacking == self.host_id:
+            self.who_attacking = self.guest_id
+        else:
+            self.who_attacking = self.guest_id    
+
+    def is_trump(self, card):
+        if self.trump_suit == card[-2]:
+            return True
+        else: return False
+
+    def check_turn(self, card, who):
+        if who == self.who_attacking:
+            if self.card_on_desk == []:
+                self.put_on_desk(card, attack=True)
+                self.change_who_turn()
+                return 
+            else: 
+                value_on_desk = []
+                for one_card in self.card_on_desk:
+                    value_on_desk.append(all_cards36[one_card])
+                if all_cards36[card] in value_on_desk:
+                    self.put_on_desk(card, attack=True)
+                    self.change_who_turn()
+                    return
+                else: return False
+        else:
+            #проверяю если количество карт на столе и которые нужно отбить совпали
+            #и совпало значение карты с одной из карт на столе значит это перевод карты
+            if len(self.card_on_desk) == len(self.attacking_cards) and all_cards36[card] == all_cards36[self.card_on_desk[0]]:
+                if self.is_trump(card):
+                    return 'Перевод козырем'
+                else: 
+                    self.put_on_desk(card,attack=True)
+                    self.change_who_turn()
+                    self.change_who_attacking()
+                    return
+            #если не перевод то игрок отбивается
+            else:
+                #если козырь
+                if self.is_trump(card):
+                    if self.is_trump(self.attacking_cards[0]):
+                        if all_cards36[card] > all_cards36[self.attacking_cards[0]]:
+                            self.put_on_desk(card, attack=False)
+                            self.change_who_turn()
+                            return
+                        else: return False
+                    else: 
+                        self.put_on_desk(card, attack=False)
+                        self.change_who_turn()
+                        return
+                #если обычная карта
+                else:
+                    if card[-2] == self.attacking_cards[0][-2]:
+                        if all_cards36[card] > all_cards36[self.attacking_cards[0]]:
+                            self.put_on_desk(card, attack=False)
+                            self.change_who_turn()
+                            return
+                        else: return False
+                    else: return False
+
+
+        #проверить атакующий ходит или отбиающийся, что это за ход, покрытие карты или перевод
+        #возвращать False при неправильном ходе или "Перевод козырем"
+        
+
+    def put_on_desk(self, card, attack=None):
+        #положить карту на стол и убрать ее с руки игрока
+        self.card_on_desk += card
+        if attack:
+            self.attacking_cards.append(card)
+        else: self.attacking_cards.pop(0)
+        if card in self.hand_host:
+            self.hand_host.remove(card)
+        else: self.hand_guest.remove(card)
+        
+        
 
 A = Durak(111,222,'host', 'guest',333,444)
 
