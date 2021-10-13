@@ -123,7 +123,6 @@ class Durak():
         else: return False
 
     def check_turn(self, card, who):
-        #добавить что если у защищающегося нет карт то закончить ход
         if who == self.who_attacking:
             if self.card_on_desk == []:
                 self.put_on_desk(card, attack=True)
@@ -240,7 +239,7 @@ class Durak():
             else: self.hand_guest.append(card) 
         self.card_on_desk = []
         self.attacking_cards = []
-        self.check_turn()
+        self.change_who_turn()
             
     def hand_defender_is_empty(self):
         if self.who_attacking != self.host_id:
