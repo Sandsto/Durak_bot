@@ -113,3 +113,5 @@ def update_message(id, somebody_switch=None, pobili=None, pereveli = None):
     kb_guest.add(types.InlineKeyboardButton(text='Взять', callback_data = 'Взять'))
 
     return bot.edit_message_text(chat_id= active_game[id].id_host, message_id = active_game[id].id_host_message, text= message_for_host(active_game[id]), reply_markup =kb_host ), bot.edit_message_text(chat_id= active_game[id].id_guest, message_id = active_game[id].id_guest_message, text= message_for_guest(active_game[id]), reply_markup = kb_guest)
+
+    #
