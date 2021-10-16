@@ -50,7 +50,7 @@ try:
                 bot.send_message(call.from_user.id, 'Не ваш ход')
             else:  
                 if game.check_turn(call.data, call.from_user.id) == True:
-                    if game.winner:
+                    if game.winner != None:
                         bot.edit_message_text(chat_id= game.host_id, message_id = game.host_message_id, text= f"Игра завершена, победитель - {game.winner}")
                         bot.edit_message_text(chat_id= game.guest_id, message_id = game.guest_message_id, text= f"Игра завершена, победитель - {game.winner}")
                         del active_game[game.host_id]
@@ -65,16 +65,25 @@ try:
         
         elif call.data == 'Бито':
             game = active_game[call.from_user.id]
-            if call.from_user.id != game.who_turn or call.from_user.id != game.who_attacking:
-                bot.send_message(call.from_user.id, 'Не ваш ход')
+            if call.from_user.id != game.who_turn_game.card_on_desk ==[]:
+                bot.send_message(call.from_user.id, 'Не ваш ход/ вы должны отбить')
+            elif call.from_user.id != game.who_attacking:
+                bot.send_message(call.from_user.id, 'Вы должны отбивать карты')
+            elif game.card_on_desk ==[]:
+                bot.send_message(call.from_user.id, 'Стол пуст, положите карту')
             else:  
                 game.attack_pass()
                 update_message(game)
 
         elif call.data =='Взять':
             game = active_game[call.from_user.id]
-            if call.from_user.id != game.who_turn or call.from_user.id == game.who_attacking:
+            if call.from_user.id != game.who_turn:
                 bot.send_message(call.from_user.id, 'Не ваш ход')
+            elif call.from_user.id == game.who_attacking:
+                bot.send_message(call.from_user.id, 'Вы атакуете, положите карту')
+            elif game.card_on_desk == []:
+                bot.send_message(call.from_user.id, 'Стол пуст')
+
             else:  
                 game.give_up(call.from_user.id)
                 update_message(game)
@@ -121,15 +130,17 @@ try:
         #записываю в кнопки какие карты на руках
         
         kb_host = types.InlineKeyboardMarkup()
+        
         for card in game.hand_host:
             kb_host.add(types.InlineKeyboardButton(text=f'{card}', callback_data = f'{card}'))
         kb_host.add(types.InlineKeyboardButton(text='Бито', callback_data = 'Бито'))
         kb_host.add(types.InlineKeyboardButton(text='Взять', callback_data = 'Взять'))
         kb_host.add(types.InlineKeyboardButton(text='Закончить игру', callback_data = 'Закончить игру'))
-
+       
 
             
         kb_guest = types.InlineKeyboardMarkup()
+        #kb_guest.row_width = 3
         for card in game.hand_guest:
             kb_guest.add(types.InlineKeyboardButton(text=f'{card}', callback_data = f'{card}'))
         kb_guest.add(types.InlineKeyboardButton(text='Бито', callback_data = 'Бито'))

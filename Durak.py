@@ -50,10 +50,10 @@ class Durak():
        
      
     def full_hand(self, who_attacking_id = None):
-        if (len(self.hand_guest) <6 or len(self.hand_guest) < 6) and self.deck_of_card !=[]:
+        if (len(self.hand_host) <6 or len(self.hand_guest) < 6) and self.deck_of_card !=[]:
             if who_attacking_id == self.host_id:
                 if self.deck_of_card !=[]:
-                    if len(self.hand_host)<6:
+                    if len(self.hand_host) < 6:
                         self.hand_host.append(self.deck_of_card.pop())
                 if self.deck_of_card !=[]:
                     if len(self.hand_guest) < 6:
@@ -212,9 +212,9 @@ class Durak():
         #добавил условие победы, если карты в колоде и на руке кончились, после того как положили карту
         if self.deck_of_card == []:
             if self.hand_host == []:
-                self.winner == self.host_name
+                self.winner = self.host_name
             elif self.hand_guest == []:
-                self.winner == self.guest_name
+                self.winner = self.guest_name
 
     def trump_was_defence(self):
         #если перевод козырем оказался побитием карты
