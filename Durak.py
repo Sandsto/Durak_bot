@@ -43,7 +43,7 @@ class Durak():
     def start_game(self):
         self.deck_of_card= random.sample(all_cards36.keys(), len(all_cards36)) #вернет массив с обозначением карт
         self.full_hand()
-        self.trump = self.deck_of_card[-1] #получаю значение козыря. '7♣️' например
+        self.trump = self.deck_of_card[0] #получаю значение козыря. '7♣️' например
         self.trump_suit = self.trump[-2] #получаю значение масти козыря отдельно. '♣️' например
         self.who_attacking = self.who_start_game()
         self.who_turn  = self.who_start_game()
