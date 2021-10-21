@@ -1,8 +1,9 @@
 import telebot
 from telebot import types
 from Durak import Durak
+from config import TOKEN
 
-bot = telebot.TeleBot('1684865185:AAHaAj-z7cQ8ohIZUjmgsN_IJc5JhYMHCpA')
+bot = telebot.TeleBot(TOKEN)
 
 active_game = {}
 try:
