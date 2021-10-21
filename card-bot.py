@@ -31,7 +31,7 @@ try:
 
         start_talk = types.InlineQueryResultArticle(
             id="2", title="Нажми чтобы открыть ЛС с ботом",
-            input_message_content=types.InputTextMessageContent(message_text="Перейди в ЛС бота @shdausdvbot и нажми start для начала диалога. \nЗатем возвращайся сюда и можешь бросить вызов игроку, написав @shdausdvbot и выбрав Сыграть в дурачка"),
+            input_message_content=types.InputTextMessageContent(message_text="Перейди в ЛС бота @GameDurak_bot и нажми start для начала диалога. \nЗатем возвращайся сюда и можешь бросить вызов игроку, написав @shdausdvbot и выбрав Сыграть в дурачка"),
             description = 'Нужно чтобы игра запустилась',
             thumb_width = 16,
             thumb_height = 16
