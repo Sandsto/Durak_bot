@@ -254,10 +254,3 @@ class Durak():
             if self.hand_guest ==[]:
                 return True
             else: return False
-
-
-A = Durak(111,222,'host', 'guest',333,444)
-
-A.start_game()
-
-print(A.trump, A.hand_host, A.hand_guest, A.who_turn)
