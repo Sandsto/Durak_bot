@@ -2,6 +2,7 @@ import telebot
 from telebot import types
 from Durak import Durak
 from config import TOKEN
+import base
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -10,7 +11,7 @@ try:
     @bot.inline_handler(lambda query: len(query.query) >= 0)
     def query_text(query):
         #записал id и имя того кто начал игру, чтобы затем передать это вместе с callback, т.к id и имя самого callback будут того, кто нажал кнопку
-        who_start_game = str(query.from_user.id) + ' ' + query.from_user.first_name
+        who_start_game = str(query.from_user.id) + ' ' + query.from_user.first_name + ' ' + query.from_user.username
 
         kb = types.InlineKeyboardMarkup()
 
@@ -31,7 +32,7 @@ try:
 
         start_talk = types.InlineQueryResultArticle(
             id="2", title="Нажми чтобы открыть ЛС с ботом",
-            input_message_content=types.InputTextMessageContent(message_text="Перейди в ЛС бота @GameDurak_bot и нажми start для начала диалога. \nЗатем возвращайся сюда и можешь бросить вызов игроку, написав @shdausdvbot и выбрав Сыграть в дурачка"),
+            input_message_content=types.InputTextMessageContent(message_text="Перейди в ЛС бота @GameDurak_bot и нажми start для начала диалога. \nЗатем возвращайся сюда и можешь бросить вызов игроку, написав @GameDurak_bot и выбрав Сыграть в дурачка"),
             description = 'Нужно чтобы игра запустилась',
             thumb_width = 16,
             thumb_height = 16
@@ -53,6 +54,10 @@ try:
                 what_return_check = game.check_turn(call.data, call.from_user.id)
                 if  what_return_check == True:
                     if game.winner != None:
+                        #записал в базу, что игра закончилась
+                        base.make_new(game.host_id, game.host_nickname, 0)
+                        base.make_new(game.guest_id, game.guest_nickname, 0)
+
                         bot.edit_message_text(chat_id= game.host_id, message_id = game.host_message_id, text= f"Игра завершена, победитель - {game.winner} \n"+ message_for_host(game))
                         bot.edit_message_text(chat_id= game.guest_id, message_id = game.guest_message_id, text= f"Игра завершена, победитель - {game.winner} \n" + message_for_guest(game))
                         del active_game[game.host_id]
@@ -62,10 +67,16 @@ try:
 
                 elif what_return_check == 'Перевод козырем':
                     if game.winner != None:
+                        #записал в базу, что игра закончилась
+                        base.make_new(game.host_id, game.host_nickname, 0)
+                        base.make_new(game.guest_id, game.guest_nickname, 0)
+
                         bot.edit_message_text(chat_id= game.host_id, message_id = game.host_message_id, text= f"Игра завершена, победитель - {game.winner} \n" + message_for_host(game))
                         bot.edit_message_text(chat_id= game.guest_id, message_id = game.guest_message_id, text= f"Игра завершена, победитель - {game.winner} \n" + message_for_guest(game))
                         del active_game[game.host_id]
                         del active_game[game.guest_id]
+
+
                     else: 
                         to_clarify(call.from_user.id)
                 else:    
@@ -103,6 +114,11 @@ try:
             del active_game[game.host_id]
             del active_game[game.guest_id]
 
+            
+            #записал в базу, что игра закончилась
+            base.make_new(game.host_id, game.host_nickname, 0)
+            base.make_new(game.guest_id, game.guest_nickname, 0)
+
         elif call.data == 'Перевожу':
             game = active_game[call.from_user.id]
             game.trump_was_switch()
@@ -121,8 +137,14 @@ try:
             host_id_and_name = call.data.split()
             host_id = int(host_id_and_name[0]) #id принимающего
             host_name = host_id_and_name[1] #имя принимающего
+            host_nick = host_id_and_name[2] #никнейм принимающего - нужен для записи в базу
             guest_id = call.from_user.id #id гостя
             guest_name=call.from_user.first_name #имя гостя
+            guest_nick = call.from_user.username #никнейм гостя - нужен для запись в базу
+
+            #записал в базу того, кто начал и кто принял игру
+            base.make_new(host_id, host_nick, 1)
+            base.make_new(guest_id, guest_nick, 1)
 
             if host_id in active_game.keys() or guest_id in active_game.keys():
                 if host_id in active_game.keys():
@@ -135,7 +157,7 @@ try:
                 host_game = bot.send_message(host_id, 'Игра началась')
                 guest_game = bot.send_message(guest_id, 'Игра началась')
 
-                game  = Durak(host_id, guest_id, host_name, guest_name, host_game.message_id, guest_game.message_id)
+                game  = Durak(host_id, guest_id, host_name, guest_name, host_game.message_id, guest_game.message_id, host_nick, guest_nick)
                 
                 #записал два раза в словарь для отслеживания текущей игры. Ключом является id игроков
                 active_game[host_id]=game

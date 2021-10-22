@@ -24,13 +24,15 @@ all_cards52 = {
 
 class Durak():
     def __init__(self, host_id, guest_id, host_name, guest_name, host_message_id,
-    guest_message_id):
+    guest_message_id, host_nickname, guest_nickname):
         self.host_id = host_id
         self.guest_id = guest_id
         self.host_name = host_name
         self.guest_name = guest_name
         self.host_message_id = host_message_id
         self.guest_message_id = guest_message_id
+        self.host_nickname = host_nickname
+        self.guest_nickname = guest_nickname
         self.hand_host = []
         self.hand_guest = []
         self.deck_of_card = []
@@ -74,13 +76,13 @@ class Durak():
         for host_card in  self.hand_host:
             if self.trump_suit in host_card:
                 trump_host_card.append(all_cards36[host_card])
-        print(trump_host_card)
+        
         trump_guest_card = []
         #тоже самое для второго игрока
         for guest_card in  self.hand_guest:
             if self.trump_suit in guest_card:
                 trump_guest_card.append(all_cards36[guest_card])
-        print(trump_guest_card)
+        
         #если ни у кого не нашлось козырей, то всё обнуляем и заново начинаем игру
         if trump_host_card ==[] and trump_guest_card ==[]:
             self.deck_of_card = []
@@ -91,7 +93,7 @@ class Durak():
             self.start_game()
         else:
             min_trump = min(trump_host_card+trump_guest_card)
-            print(min_trump)
+            
             #возвращаем id того у кого меньший козырь
             if min_trump in trump_host_card:
                 return self.host_id 
