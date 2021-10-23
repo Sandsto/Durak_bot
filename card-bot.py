@@ -4,8 +4,26 @@ from Durak import Durak
 from config import TOKEN
 import base
 
-bot = telebot.TeleBot(TOKEN)
+import logging
 
+# Create a logging instance
+logger = logging.getLogger('my_application')
+logger.setLevel(logging.INFO) # you can set this to be DEBUG, INFO, ERROR
+
+# Assign a file-handler to that instance
+fh = logging.FileHandler("log_error.txt")
+fh.setLevel(logging.INFO) # again, you can set this differently
+
+# Format your logs (optional)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter) # This will set the format to the file handler
+
+# Add the handler to your logging instance
+logger.addHandler(fh)
+
+
+
+bot = telebot.TeleBot(TOKEN)
 active_game = {}
 try:
     @bot.inline_handler(lambda query: len(query.query) >= 0)
@@ -21,7 +39,7 @@ try:
 
         durak_game = types.InlineQueryResultArticle(
             id="1", title="Сыграть в дурачка",
-            input_message_content=types.InputTextMessageContent(message_text=f"Кто сыграет в дурака с {query.from_user.first_name}? \n Обратите внимание, что у каждого игрока должен быть начат диалог с @GameDurak_bot"),
+            input_message_content=types.InputTextMessageContent(message_text=f"Кто сыграет в дурака с {query.from_user.first_name}? \nОбратите внимание, что у каждого игрока должен быть начат диалог с @GameDurak_bot"),
             description = 'Хоть ты любишь в очко',
             thumb_url = 'https://sun9-74.userapi.com/c851520/v851520704/c474a/izjMTwMVmto.jpg',
             thumb_width = 16,
@@ -153,6 +171,10 @@ try:
                 elif guest_id in active_game.keys():
                     bot.send_message(guest_id, 'У вас есть незаконченная игра')
                 return False
+            elif host_id == guest_id:
+                bot.edit_message_text(inline_message_id=call.inline_message_id,
+                    text=f'Играть самим с собой нельзя')
+
             else:
 
                 host_game = bot.send_message(host_id, 'Игра началась')
@@ -244,11 +266,10 @@ try:
         
         bot.send_message(id, 'Вы переводите козырем или бьете  карту?', reply_markup=kb)
     
+    bot.polling(none_stop=True, interval=2 )
+
+except Exception as ke:
+    logger.exception(ke) 
+    #bot.send_message(ke, 'Ошибка, попробуйте позже сыграть')
 
 
-except KeyError as ke:
-    print(ke)
-    bot.send_message(ke, 'Ошибка, попробуйте позже сыграть')
-
-
-bot.polling(none_stop=True)
