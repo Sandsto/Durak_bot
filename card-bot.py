@@ -21,7 +21,7 @@ try:
 
         durak_game = types.InlineQueryResultArticle(
             id="1", title="Сыграть в дурачка",
-            input_message_content=types.InputTextMessageContent(message_text=f"Кто сыграет в дурака с {query.from_user.first_name}?"),
+            input_message_content=types.InputTextMessageContent(message_text=f"Кто сыграет в дурака с {query.from_user.first_name}? \n Обратите внимание, что у каждого игрока должен быть начат диалог с @GameDurak_bot"),
             description = 'Хоть ты любишь в очко',
             thumb_url = 'https://sun9-74.userapi.com/c851520/v851520704/c474a/izjMTwMVmto.jpg',
             thumb_width = 16,
@@ -34,6 +34,7 @@ try:
             id="2", title="Нажми чтобы открыть ЛС с ботом",
             input_message_content=types.InputTextMessageContent(message_text="Перейди в ЛС бота @GameDurak_bot и нажми start для начала диалога. \nЗатем возвращайся сюда и можешь бросить вызов игроку, написав @GameDurak_bot и выбрав Сыграть в дурачка"),
             description = 'Нужно чтобы игра запустилась',
+            thumb_url = 'http://pm1.narvii.com/7099/6bec9ae09a5e970bc6eff85393a7a825abc3755dr1-64-64v2_uhq.jpg',
             thumb_width = 16,
             thumb_height = 16
         )
